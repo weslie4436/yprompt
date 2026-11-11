@@ -155,7 +155,11 @@ html.gate-ok #invite-panel { display: none !important; }
   white-space: pre-wrap;
   word-break: break-word;
 }
-.prompt-out[hidden] { display: none !important; }
+.prompt-out[hidden],
+.prompt-verdict[hidden],
+#prompt-copy[hidden] {
+  display: none !important;
+}
 .prompt-actions {
   margin: 16px 0 0;
   display: flex;
