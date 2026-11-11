@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover"/>
+<script>
+(function () {
+  function stopZoom(ev) { ev.preventDefault(); }
+  document.addEventListener("gesturestart", stopZoom, { passive: false });
+  document.addEventListener("gesturechange", stopZoom, { passive: false });
+})();
+</script>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-title" content="YPrompt"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+<meta name="theme-color" content="#fafafa"/>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+<link rel="apple-touch-icon" href="./icons/p-180.png?v=1"/>
+<link rel="icon" type="image/png" href="./icons/p-180.png?v=1"/>
+<title>YPrompt</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="./app.css?v=1"/>
+<link rel="stylesheet" href="./prompt.css?v=1"/>
+<script src="./config.js?v=1"></script>
+<script>
+(function () {
+  var opened = "";
+  try { opened = sessionStorage.getItem("yprompt.gateOk") || ""; } catch (e) {}
+  window.YPROMPT_NEED_GATE = opened !== "1";
+  document.documentElement.classList.add(window.YPROMPT_NEED_GATE ? "need-gate" : "gate-ok");
+})();
+</script>
+</head>
+<body>
+<div class="blobs" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+<div class="hall with-feed is-invite" id="hall">
+  <div class="profile">
+    <div class="prompt-mark" id="prompt-mark" aria-hidden="true">
+      <svg viewBox="0 0 88 88">
+        <rect width="88" height="88" rx="20" fill="#c13584"/>
+        <rect x="28" y="26" width="8" height="36" rx="4" fill="#fff"/>
+        <rect x="42" y="26" width="22" height="8" rx="4" fill="#fff"/>
+        <rect x="42" y="40" width="16" height="8" rx="4" fill="#fff"/>
+      </svg>
+    </div>
+    <h1 class="brand">YPrompt</h1>
+    <p class="status" id="status"></p>
+    <div class="invite-panel" id="invite-panel">
+      <p class="invite-hey" id="invite-hey">請輸入密碼</p>
+      <p class="invite-safari" id="invite-safari" hidden>請用 Safari 打開</p>
+      <div class="gate-dots" id="gate-dots" aria-hidden="true"></div>
+      <div class="gate-pad" id="gate-pad" role="group" aria-label="數字門">
+        <button type="button" class="gate-key" data-num="1">1</button>
+        <button type="button" class="gate-key" data-num="2">2</button>
+        <button type="button" class="gate-key" data-num="3">3</button>
+        <button type="button" class="gate-key" data-num="4">4</button>
+        <button type="button" class="gate-key" data-num="5">5</button>
+        <button type="button" class="gate-key" data-num="6">6</button>
+        <button type="button" class="gate-key" data-num="7">7</button>
+        <button type="button" class="gate-key" data-num="8">8</button>
+        <button type="button" class="gate-key" data-num="9">9</button>
+        <span class="gate-skip" aria-hidden="true"></span>
+        <button type="button" class="gate-key" data-num="0">0</button>
+        <button type="button" class="gate-key gate-del" data-del="1" aria-label="刪除">⌫</button>
+      </div>
+    </div>
+    <div class="invite-wait" id="invite-wait" hidden>
+      <div class="thinking-five" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
+      <div class="invite-wait-bar"></div>
+    </div>
+  </div>
+  <div class="stage-bg" id="stage-bg" hidden></div>
+  <div class="home-head" id="home-head" hidden>
+    <div class="cab-hud" id="cab-hud" hidden>
+      <div class="cab-wrap">
+        <div class="cab-cover">
+          <div class="cab-ring" aria-hidden="true"></div>
+          <div class="cab-face"><img id="face-img" alt="" src="./face-default.jpg?v=1"/><span class="cab-foil" aria-hidden="true"></span></div>
+          <div class="cab-mask" aria-hidden="true"></div>
+        </div>
+        <div id="album-settings" class="album-settings">
+          <button type="button" class="ins-icon settings-toggle" id="settingsToggle" aria-label="設定" aria-expanded="false">
+            <span class="ins-ring"></span>
+            <span class="ins-face">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.6 3.8l.6-1.3h3.6l.6 1.3 1.6.7 1.4-.5 2.5 2.5-.5 1.4.7 1.6 1.3.6v3.6l-1.3.6-.7 1.6.5 1.4-2.5 2.5-1.4-.5-1.6.7-.6 1.3h-3.6l-.6-1.3-1.6-.7-1.4.5-2.5 2.5.5-1.4-.7-1.6-1.3-.6v-3.6l1.3-.6.7-1.6-.5-1.4L6.6 4l1.4.5 1.6-.7z" fill="none" stroke="currentColor" stroke-width="1.45" stroke-linejoin="round"/><circle cx="12" cy="11.9" r="3.2" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+            </span>
+          </button>
+          <div class="settings-menu" id="settingsMenu" hidden role="menu">
+            <button type="button" class="settings-entry" data-job="cover" role="menuitem">
+              <span class="ins-icon job-icon" aria-hidden="true"><span class="ins-ring"></span><span class="ins-face"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="8" width="17" height="11.5" rx="2" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M8 8l1.4-2.4h5.2L16 8" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><circle cx="12" cy="13.6" r="3" fill="none" stroke="currentColor" stroke-width="1.7"/></svg></span></span>
+              <span>更換頭像</span>
+            </button>
+            <button type="button" class="settings-entry" data-job="backdrop" role="menuitem">
+              <span class="ins-icon job-icon" aria-hidden="true"><span class="ins-ring"></span><span class="ins-face"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5.5" width="17" height="13" rx="2" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M5.5 16.2l4.2-4.6 3 3.2 2.2-2.4 3.6 3.8" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><circle cx="9" cy="9.2" r="1.3" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></span></span>
+              <span>更換背景</span>
+            </button>
+          </div>
+        </div>
+      </div>
+      <p class="reader-name" id="reader-name">館主</p>
+    </div>
+    <div class="tag-board" id="tag-board">
+      <div class="mode-bar" id="mode-bar">
+        <button type="button" class="mode-btn" data-mode="fav">最愛</button>
+        <button type="button" class="mode-btn is-on" data-mode="compile">編譯</button>
+        <button type="button" class="mode-btn" data-mode="log">紀錄</button>
+      </div>
+    </div>
+  </div>
+  <div class="prompt-desk" id="prompt-desk" hidden>
+    <textarea class="prompt-brief" id="prompt-brief" rows="4" placeholder="用中文寫你想看的畫面"></textarea>
+    <div class="prompt-row" role="group" aria-label="檔位">
+      <button type="button" class="mode-btn" data-group="level" data-val="l1">L1 著衣</button>
+      <button type="button" class="mode-btn is-on" data-group="level" data-val="l2">L2 走光</button>
+      <button type="button" class="mode-btn" data-group="level" data-val="l3">L3 半裸</button>
+      <button type="button" class="mode-btn" data-group="level" data-val="l4">L4 高暴露</button>
+      <button type="button" class="mode-btn" data-group="level" data-val="l5">L5 全裸</button>
+    </div>
+    <div class="prompt-row" role="group" aria-label="風格">
+      <button type="button" class="mode-btn is-on" data-group="style" data-val="anime">動漫</button>
+      <button type="button" class="mode-btn" data-group="style" data-val="photo">寫實</button>
+    </div>
+    <div class="prompt-row" role="group" aria-label="語言">
+      <button type="button" class="mode-btn" data-group="lang" data-val="zh">中文</button>
+      <button type="button" class="mode-btn is-on" data-group="lang" data-val="mix">中英混</button>
+      <button type="button" class="mode-btn" data-group="lang" data-val="en">英文</button>
+    </div>
+    <div class="prompt-actions">
+      <button type="button" class="tag-apply" id="prompt-go"><span class="tag-apply-face">確認</span></button>
+      <p class="prompt-out" id="prompt-out" hidden></p>
+      <button type="button" class="tag-apply" id="prompt-copy" hidden><span class="tag-apply-face">複製</span></button>
+      <div class="prompt-verdict" id="prompt-verdict" hidden>
+        <button type="button" class="mode-btn" data-verdict="pass">過</button>
+        <button type="button" class="mode-btn" data-verdict="blur">糊</button>
+        <button type="button" class="mode-btn" data-verdict="block">擋</button>
+      </div>
+    </div>
+  </div>
+  <div class="feed" id="feed" hidden></div>
+</div>
+<aside class="photo-rail" id="photo-rail" hidden aria-label="提示詞操作">
+  <button type="button" class="ins-icon rail-heart" id="rail-heart" aria-label="愛心">
+    <span class="ins-ring"></span>
+    <span class="ins-face">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20C10.5 18.4 7.3 15.8 5.4 11.9C4 9.1 5.2 6 8.4 6c1.8 0 3 1.1 3.6 2.2C12.6 7.1 13.8 6 15.6 6c3.2 0 4.4 3.1 3 5.9C16.7 15.8 13.5 18.4 12 20Z"/></svg>
+    </span>
+  </button>
+</aside>
+<input id="cover-input" type="file" accept="image/*" hidden/>
+<input id="backdrop-input" type="file" accept="image/*" hidden/>
+<div class="settings-catch" id="settingsCatch" hidden></div>
+<div class="home-install" id="home-install" hidden>
+  <p>請點底部分享，再選加入主畫面</p>
+  <button type="button" class="invite-go" id="home-installed">我已加入</button>
+</div>
+<script src="./gate.js?v=1"></script>
+<script src="./compile.js?v=1"></script>
+<script src="./hey.js?v=1"></script>
+<script src="./desk.js?v=1"></script>
+</body>
+</html>
